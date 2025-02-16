@@ -1,8 +1,12 @@
+import { ApolloDriver, ApolloDriverConfig } from '@nestjs/apollo';
 import { Module } from '@nestjs/common';
 import { APP_GUARD } from '@nestjs/core';
+import { GraphQLModule } from '@nestjs/graphql';
 import { ThrottlerModule } from '@nestjs/throttler';
-import { CustomThrottlerGuard } from './guards/custom-throttler-guard';
+import { join } from 'path';
+import { GqlThrottlerGuard } from './guards/gql-throttler-guard';
 import { HealthModule } from './modules/health/health.module';
+import { ImageModule } from './modules/image/image.module';
 import { UserModule } from './modules/user/user.module';
 
 @Module({
@@ -16,14 +20,21 @@ import { UserModule } from './modules/user/user.module';
         },
       ],
     }),
+    GraphQLModule.forRoot<ApolloDriverConfig>({
+      driver: ApolloDriver,
+      playground: true,
+      context: ({ req, res }) => ({ req, res }),
+      autoSchemaFile: join(process.cwd(), 'src/schema.gql'),
+    }),
     UserModule,
     HealthModule,
+    ImageModule,
   ],
   controllers: [],
   providers: [
     {
       provide: APP_GUARD,
-      useClass: CustomThrottlerGuard
+      useClass: GqlThrottlerGuard
     }
   ],
 })
