@@ -23,8 +23,8 @@ import { UserModule } from './modules/user/user.module';
   providers: [
     {
       provide: APP_GUARD,
-      useClass: CustomThrottlerGuard
-    }
+      useClass: CustomThrottlerGuard,
+    },
   ],
 })
-export class AppModule { }
+export class AppModule {}
